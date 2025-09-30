@@ -247,38 +247,4 @@ auto_merge_algors: List[Callable] = [
 
 
 if __name__ == '__main__':
-    import json
-    import pickle
-    from tqdm import tqdm
-    from transformers import AutoTokenizer
-
-    preds = [json.loads(l) for l in open(
-        f'/home/tione/notebook/vincentwslu/projects/HiCBench/pred/llama3.1-8b/BgeM3_new/HC200_L10_tk4096_AM1/HiCBench.jsonl').readlines()]
-    preds_dict = {p['input'] + p['answers'][0]: p for p in preds}
-
-    tokenizer = AutoTokenizer.from_pretrained('/home/tione/notebook/vincentwslu/models/Llama-3.1-8B-Instruct')
-    # tokenizer = AutoTokenizer.from_pretrained('/home/tione/notebook/boke/llm/models/qwen-ckpts/Qwen3-32B')
-    data = 'HC200_L10'
-    context_same = []
-    evidence_recall = []
-    objs = [json.loads(l) for l in open(
-        f'/home/tione/notebook/vincentwslu/projects/HiCBench/dataset/BgeM3_new/{data}/data/HiCBench.jsonl'
-    ).readlines()]
-    passages_dict = {}
-    for fn in os.listdir(f"./dataset/BgeM3_new/{data}/index/HiCBench"):
-        if not fn.endswith(".pkl"):
-            continue
-        passages = pickle.load(open(f"./dataset/BgeM3_new/{data}/index/HiCBench/{fn}", 'rb'))
-        passages_dict[fn.replace('.pkl', '')] = passages
-
-    for i, o in tqdm(enumerate(objs)):
-        key = o['input'] + o['answers'][0]
-        c, _ = tree_chunk_retrieval_auto_merge(passages_dict, o, tokenizer, 4096, 200)
-        p = preds_dict[key]
-        context_same.append(p['context'] == c)
-        evidence_recall.append(
-            sum([cal_evidence_recall(e.lstrip('# ').replace('. ', '.'), c) * len(e) for e in o['evidences']])
-            /
-            (sum([len(e) for e in o['evidences']]) + 1e-20)
-        )
-    print(len(context_same), sum(context_same) / len(context_same), np.mean(evidence_recall))
+    pass
