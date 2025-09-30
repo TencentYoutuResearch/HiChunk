@@ -1,0 +1,14 @@
+{
+    "narrativeqa": 128,
+    "qasper": 128,
+    "multifieldqa_en": 64,
+    "multifieldqa_zh": 64,
+    "hotpotqa": 32,
+    "2wikimqa": 32,
+    "musique": 32,
+    "dureader": 128,
+    "HiCBench": 512,
+    "qasper_all": 128,
+    "OHRBench_sub": 512,
+    "GutenQA": 512
+}
