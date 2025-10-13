@@ -1,0 +1,48 @@
+### model
+model_name_or_path: Qwen/Qwen3-4B
+trust_remote_code: true
+
+### method
+stage: sft
+do_train: true
+finetuning_type: full
+deepspeed: examples/deepspeed/ds_z3_config.json  # choices: [ds_z0_config.json, ds_z2_config.json, ds_z3_config.json]
+
+### dataset
+dataset: for_train_data_1011
+dataset_dir: ../corpus/combined
+template: qwen3
+cutoff_len: 32768
+max_samples: 5000000
+overwrite_cache: true
+preprocessing_num_workers: 16
+dataloader_num_workers: 4
+enable_thinking: false
+
+### output
+output_dir: saves/Qwen3-4B/full/qw3_4b_seg8k_os_1011_e3/
+save_strategy: steps
+save_steps: 500
+logging_steps: 1
+plot_loss: true
+overwrite_output_dir: true
+report_to: wandb  # choices: [none, wandb, tensorboard, swanlab, mlflow]
+
+### train
+per_device_train_batch_size: 4
+gradient_accumulation_steps: 2
+learning_rate: 1.0e-5
+num_train_epochs: 2
+lr_scheduler_type: cosine
+warmup_ratio: 0.05
+bf16: true
+ddp_timeout: 180000000
+resume_from_checkpoint: null
+adam_beta1: 0.9
+adam_beta2: 0.95
+
+### eval
+eval_dataset: for_dev_data_1011
+per_device_eval_batch_size: 4
+eval_strategy: steps
+eval_steps: 500

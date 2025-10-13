@@ -43,10 +43,11 @@ python -c "import nltk; nltk.download('punkt_tab')"
 ```text
 HiChunk
 ├── config
+├── corpus                      # Training data
 ├── dataset
 │   ├── doc                     # Document data
 │       └── {dataset}
-│               └── {doc_id}.txt      # document
+│               └── {doc_id}.txt      # Document
 │   └── qas                     # QA data
 │       └── {dataset}.jsonl     # QA list
 └── pipeline
@@ -54,7 +55,25 @@ HiChunk
     ├── indexing     # Building index
     ├── embedding    # Calculate embedding vectors
     ├── retrieval    # Calculate similarity between query and chunks
-    └── mBGE.sh      # Calculate similarity between query and chunks
+    └── mBGE.sh      # Script to build testing data
+```
+### Train Data Processing
+Download raw datasets from [qasper](https://huggingface.co/datasets/allenai/qasper), [gov-report](https://gov-report-data.github.io/), [wiki-727k](https://github.com/koomri/text-segmentation?tab=readme-ov-file) and extract files to the local path. Then change the `origin_data_path` in `process_train_data.ipynb` and run the preprocessing code.
+```shell
+origin_data_path = 'path/to/qasper'
+origin_data_path = 'path/to/gov-report'
+origin_data_path = 'path/to/wiki_727'
+```
+Then, run `build_train_data.py` to build training dataset. The data file will be saved in dir `corpus/combined`. 
+These data files are used for training HiChunk model by [llama-factory](https://github.com/hiyouga/LLaMA-Factory) lab.
+```shell
+git clone --depth 1 https://github.com/hiyouga/LLaMA-Factory.git
+cd LLaMA-Factory
+pip install -e . --no-build-isolation
+pip install deepspeed==0.16.9
+
+export CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7
+llamafactory-cli train ../HiChunk_train_config.yaml
 ```
 
 ### QA Data Format
@@ -101,7 +120,6 @@ Concatenate `chunk 1:n` to form the original document.
       ["chunk 2", 2],
       ["chunk 3", 2],
       ["chunk 4", 1],
-      ...
       ["chunk n", 3]
     ]
   }
